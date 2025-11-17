@@ -1,0 +1,68 @@
+---
+title: "Sismos en Chile"
+author: "Sara Vidal"
+date: "2025-11-16"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Revisando una base de Datos Sísmicos de Chile
+
+### Cargamos librerías
+library(dplyr)
+library(readr)
+library(lubridate)
+library(dplyr)
+
+### Cargamos la base de datos
+datos <- read.csv("~/Desktop/Datos/Individual 2/Datos sismicos/seismic_data.csv")
+
+## Limpiamos la base de datos
+### Renombramos las columnas en español
+colnames(datos) <- c("Fecha", "Latitud", "Longitud", "Profundidad_km", "Magnitud")
+
+### Convertimos la columna Fecha a formato fecha-hora y eliminaremos las fechas inválidas. Para eso utilizaremos mutate y filter.
+datos <- datos %>%
+  mutate(Fecha = ymd_hms(Fecha)) %>%
+  filter(!is.na(Fecha))
+  
+  
+### Ordenamos por fecha con arrange
+datos <- datos %>% arrange(Fecha)
+
+### Eliminamos los duplicados con distinct
+datos <- datos %>% distinct()
+
+### Verificamos la estructura con str
+str(datos)
+
+
+## Realizamos un análisis descriptivo
+
+### Realizamos un resumen rápido con summary
+summary(datos)
+
+### Revisamos el rango de fechas y magnitudes usando cat que permite imprimir con presentación el mínimo y máximo.
+cat("Rango de fechas:", min(datos$Fecha), "a", max(datos$Fecha), "\n")
+cat("Rango de magnitudes:", min(datos$Magnitud), "a", max(datos$Magnitud), "\n")
+
+#### El Rango de fechas sería 2012-03-03 11:01:47 a 2025-05-26 03:50:27 y el Rango de magnitudes es de 2.3 a 8.4 grados.
+
+### ¿Cuántos sismos ocurrieron por año?
+#### Para eso vamos a extraer el año de la columna `Fecha` con mutate en una nueva base, después agrupamos por año con gruoup_by y contamos los eventos con summarise, ordenamos de mayor a menor con arrange y luego mostramos el primer registro (el año con más eventos) creando una variable (año_max).
+sismos_por_año <- datos %>%
+  mutate(Año = year(Fecha)) %>%
+  group_by(Año) %>%
+  summarise(Eventos = n()) %>%
+  arrange(desc(Eventos))
+  
+año_max <- sismos_por_año %>% slice(1)
+cat("El año con más eventos sísmicos fue:", año_max$Año, "con", año_max$Eventos, "eventos.")
+
+####El año con más eventos sísmicos fue 2019 con 479 eventos.
+
+
+
