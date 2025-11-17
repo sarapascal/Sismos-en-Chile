@@ -16,6 +16,7 @@ library(dplyr)
 library(readr)
 library(lubridate)
 library(dplyr)
+library(ggplot2)
 
 ### Cargamos la base de datos
 datos <- read.csv("~/Desktop/Datos/Individual 2/Datos sismicos/seismic_data.csv")
@@ -65,4 +66,69 @@ cat("El año con más eventos sísmicos fue:", año_max$Año, "con", año_max$Ev
 ####El año con más eventos sísmicos fue 2019 con 479 eventos.
 
 
+### ¿En qué fechas fueron los sismos con mayor magnitud?
+#### Filtramos los sismos con magnitud mayor a 6 (eventos extremos) creando una nueva columna sismos_extremos, luego filtramos y ordenamos de mayor a menor con arrange. Luego mostramos las fechas y magnitudes.
 
+sismos_extremos <- datos %>%
+  filter(Magnitud > 6) %>%
+  arrange(desc(Magnitud))
+
+sismos_extremos %>%
+  select(Fecha, Magnitud) %>%
+
+### Calculamos el promedio de magnitud y profundidad de los sismos con mayor magnitud. Utilizamos summarise y mean para calcular el promedio.
+promedios <- sismos_extremos %>%
+  summarise(
+    Promedio_Magnitud = mean(Magnitud, na.rm = TRUE),
+    Promedio_Profundidad = mean(Profundidad_km, na.rm = TRUE),
+    Total_Eventos = n()
+  )
+  
+##Visualización de datos
+### Línea temporal de sismos de alta magnitud. 
+#### Para esto utilizamos ggplot, filtrando los sismos con magnitud mayor a 6, ordenando por fecha para la línea temporal y usando `geom_line()` para la tendencia y `geom_point()` para destacar cada evento.
+
+ggplot(sismos_extremos, aes(x = Fecha, y = Magnitud)) +
+  geom_line(color = "#E69F00", size = 1) +
+  geom_point(color = "#E69F00", size = 3) +
+  labs(title = "Eventos Sísmicos con Magnitud > 6",
+       x = "Fecha",
+       y = "Magnitud") +
+  theme_minimal()
+
+### ¿Cuántos sismos hubo por año?
+#### Para esto utilizamos ggplot, filtrando los sismos_por_año.
+
+ggplot(sismos_por_año, aes(x = Año, y = Eventos)) +
+  geom_bar(stat = "identity", fill = "#C4B4FF") +
+  geom_text(aes(label = Eventos), vjust = -0.5) +
+  labs(title = "Cantidad de Sismos por Año",
+       x = "Año",
+       y = "Número de Sismos") +
+  theme_minimal()
+  
+### Los 10 sismos más fuertes ordenado por magnitud
+####En este caso `arrange(desc(Magnitud))`: ordena los sismos por magnitud de mayor a menor, luego `slice(1:10)`: toma los 10 primeros, `coord_flip()`: invierte los ejes para que las fechas se lean mejor y finalmente `reorder(Fecha, Magnitud)`: ordena las barras según magnitud.
+
+top10_sismos <- datos %>%
+  arrange(desc(Magnitud)) %>%
+  slice(1:10) %>%
+  select(Fecha, Magnitud)
+
+ggplot(top10_sismos, aes(x = reorder(Fecha, Magnitud), y = Magnitud)) +
+  geom_bar(stat = "identity", fill = "#C4B4FF") +
+  coord_flip() +  # Para que las fechas queden en el eje Y
+  labs(title = "Top 10 Sismos Más Fuertes",
+       x = "Fecha",
+       y = "Magnitud") +
+  theme_minimal()
+
+
+### Terminamos este análisis guardando las nuevas bases de datos
+write_csv(sismos_por_año, "~/Desktop/Datos/Individual 2/Datos sismicos/sismos_por_año.csv")
+write_csv(sismos_extremos, "~/Desktop/Datos/Individual 2/Datos sismicos/sismos_extremos.csv")
+write_csv(promedios, "~/Desktop/Datos/Individual 2/Datos sismicos/promedios.csv")
+write_csv(año_max, "~/Desktop/Datos/Individual 2/Datos sismicos/año_max.csv")
+write_csv(top10_sismos, "~/Desktop/Datos/Individual 2/Datos sismicos/top10_sismos.csv")
+
+### El siguiente trabajo tuvo como objetivo analizar datos de sismología de Chile extraídos de la base de datos de Kaggle: https://www.kaggle.com/datasets/nicolasgonzalezmunoz/earthquakes-on-chile
