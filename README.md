@@ -3,8 +3,8 @@
 
 Los archivos que encuentras aquí:
 
-Base de Datos original obtenida desde https://www.kaggle.com/datasets/nicolasgonzalezmunoz/earthquakes-on-chile 
-Rmd con el análisis de la base de datos
-7 Bases de Datos nuevas
-3 Gráficos
-R project
+- Base de Datos original obtenida desde https://www.kaggle.com/datasets/nicolasgonzalezmunoz/earthquakes-on-chile 
+- Rmd con el análisis de la base de datos
+- 7 Bases de Datos nuevas
+- 3 Gráficos
+- R project
