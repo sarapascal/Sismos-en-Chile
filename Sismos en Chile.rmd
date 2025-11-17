@@ -124,11 +124,12 @@ ggplot(top10_sismos, aes(x = reorder(Fecha, Magnitud), y = Magnitud)) +
   theme_minimal()
 
 
-### Terminamos este análisis guardando las nuevas bases de datos
+### Terminamos este análisis guardando las nuevas bases de datos y los gráficos
 write_csv(sismos_por_año, "~/Desktop/Datos/Individual 2/Datos sismicos/sismos_por_año.csv")
 write_csv(sismos_extremos, "~/Desktop/Datos/Individual 2/Datos sismicos/sismos_extremos.csv")
 write_csv(promedios, "~/Desktop/Datos/Individual 2/Datos sismicos/promedios.csv")
 write_csv(año_max, "~/Desktop/Datos/Individual 2/Datos sismicos/año_max.csv")
 write_csv(top10_sismos, "~/Desktop/Datos/Individual 2/Datos sismicos/top10_sismos.csv")
+
 
 ### El siguiente trabajo tuvo como objetivo analizar datos de sismología de Chile extraídos de la base de datos de Kaggle: https://www.kaggle.com/datasets/nicolasgonzalezmunoz/earthquakes-on-chile
